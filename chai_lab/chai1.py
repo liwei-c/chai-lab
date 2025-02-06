@@ -465,17 +465,29 @@ def run_inference(
         constraint_path=constraint_path,
         esm_device=torch_device,
     )
+    # catch out of memory exceptions
+    try:
+        structure_candidate = run_folding_on_context(
+                            feature_context,
+                            output_dir=output_dir,
+                            num_trunk_recycles=num_trunk_recycles,
+                            num_diffn_timesteps=num_diffn_timesteps,
+                            num_diffn_samples=num_diffn_samples,
+                            seed=seed,
+                            device=torch_device,
+                            low_memory=low_memory,
+                        )
+    except RuntimeError as e:  
+        if "out of memory" in str(e):
+            print("| WARNING: ran out of memory, skipping batch")
+            torch.cuda.empty_cache()
+            import gc
+            gc.collect()
+            return
+        else:
+            print(str(e))
 
-    return run_folding_on_context(
-        feature_context,
-        output_dir=output_dir,
-        num_trunk_recycles=num_trunk_recycles,
-        num_diffn_timesteps=num_diffn_timesteps,
-        num_diffn_samples=num_diffn_samples,
-        seed=seed,
-        device=torch_device,
-        low_memory=low_memory,
-    )
+    return structure_candidate
 
 
 def _bin_centers(min_bin: float, max_bin: float, no_bins: int) -> Tensor:
