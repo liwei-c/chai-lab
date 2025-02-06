@@ -206,11 +206,11 @@ def new_context_to_cif_atoms(
         is_ligand = context.asym_id2entity_type[asym_id] == EntityType.LIGAND.value
 
         atom_id = atom_names[atom_index]
-        if is_ligand:
-            # need unique names for atoms, e.g. two carbon atoms
-            asym_id_atom_name2count[asym_id, atom_name] += 1
-            counter = asym_id_atom_name2count[asym_id, atom_name]
-            atom_id = atom_id + f"_{counter}"
+        # if is_ligand:
+        #     # need unique names for atoms, e.g. two carbon atoms
+        #     asym_id_atom_name2count[asym_id, atom_name] += 1
+        #     counter = asym_id_atom_name2count[asym_id, atom_name]
+        #     atom_id = atom_id + f"_{counter}"
 
         atomic_num = context.atom_ref_element[atom_index].item()
         assert isinstance(atomic_num, int)
