@@ -45,7 +45,6 @@ module = [
     "biotite.*",
     "DockQ.*",
     "boto3.*",
-    "transformers.*",
     "modelcif.*",
     "ihm.*",
 ]
@@ -71,4 +70,4 @@ exclude = [
 # should use packages from sdist section
 
 [project.scripts]
-chai = "chai_lab.main:cli"
+chai-lab = "chai_lab.main:cli"

@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install apt-get dependencies
+        run: sudo apt-get install -y kalign
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -22,6 +24,7 @@ jobs:
           pip install --no-deps uv -r <( cat requirements.in | grep torch) --extra-index-url https://download.pytorch.org/whl/cpu
           # install requirements, except torch and potentially nvidia-related stuff
           uv pip install --system -r <( cat requirements.in | grep -v nvidia | grep -v torch )
+          uv pip install --system -r requirements.dev
           uv pip install --system --no-deps -e .
       - name: Run pytest
         run: pytest ./tests/
