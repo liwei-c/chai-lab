@@ -11,8 +11,8 @@ def download_cif_file(pdb_id: str, directory: Path) -> Path:
 
     No-op if the directory/pdb_id.cif.gz already exists.
     """
-    outfile = directory / f"{pdb_id}.cif.gz"
-    source_url = f"https://files.rcsb.org/download/{pdb_id}.cif.gz"
+    outfile = directory / f"{pdb_id}.cif"
+    source_url = f"https://files.rcsb.org/download/{pdb_id}.cif"
     download_if_not_exists(source_url, outfile)
     assert outfile.exists() and outfile.stat().st_size > 0
     return outfile

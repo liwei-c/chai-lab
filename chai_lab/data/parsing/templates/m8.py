@@ -23,7 +23,7 @@ def parse_m8_file(fname: Path) -> pd.DataFrame:
     """Parse the m8 alignment format describing template information."""
     table = pd.read_csv(
         fname,
-        delimiter="\t",
+        delimiter="\s+",
         header=None,
         names=[
             "query_id",
@@ -60,7 +60,7 @@ def parse_m8_to_template_hits(
     table = parse_m8_file(m8_path)
 
     # Subset to those matching the query pdb id
-    table = table.loc[table.query_id.astype(str) == query_pdb_id]
+    table = table.loc[table.subject_id.astype(str) == query_pdb_id]
     if len(table) == 0:
         logger.warning(f"[{query_pdb_id=}] No corresponding entries in {m8_path=}")
         return  # No hits
