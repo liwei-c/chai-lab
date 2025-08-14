@@ -23,7 +23,7 @@ def parse_m8_file(fname: Path) -> pd.DataFrame:
     """Parse the m8 alignment format describing template information."""
     table = pd.read_csv(
         fname,
-        delimiter="\t",
+        delimiter="\s+",
         header=None,
         names=[
             "query_id",
