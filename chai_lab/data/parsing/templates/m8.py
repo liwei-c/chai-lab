@@ -52,6 +52,7 @@ def parse_m8_to_template_hits(
     m8_path: Path,
     template_cif_folder: Path | None = None,
 ) -> Iterator[TemplateHit]:
+    print(f"m8_path is {m8_path}")
     assert m8_path.is_file()
 
     if template_cif_folder is not None:
@@ -60,7 +61,7 @@ def parse_m8_to_template_hits(
     table = parse_m8_file(m8_path)
 
     # Subset to those matching the query pdb id
-    table = table.loc[table.query_id.astype(str) == query_pdb_id]
+    table = table.loc[table.subject_id.astype(str) == query_pdb_id]
     if len(table) == 0:
         logger.warning(f"[{query_pdb_id=}] No corresponding entries in {m8_path=}")
         return  # No hits

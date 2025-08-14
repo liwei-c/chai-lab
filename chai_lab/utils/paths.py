@@ -29,7 +29,6 @@ assert repo_root.exists()
 def download_if_not_exists(http_url: str, path: Path):
     if path.exists():
         return
-
     with FileLock(path.with_suffix(".download_lock")):
         if path.exists():
             return  # if-lock-if sandwich to download only once
