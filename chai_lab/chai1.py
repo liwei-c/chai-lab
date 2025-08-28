@@ -550,16 +550,26 @@ def run_inference(
     )
     # catch out of memory exceptions
     try:
-        structure_candidate = run_folding_on_context(
-                            feature_context,
-                            output_dir=output_dir,
-                            num_trunk_recycles=num_trunk_recycles,
-                            num_diffn_timesteps=num_diffn_timesteps,
-                            num_diffn_samples=num_diffn_samples,
-                            seed=seed,
-                            device=torch_device,
-                            low_memory=low_memory,
-                        )
+        all_candidates: list[StructureCandidates] = []
+        for trunk_idx in range(num_trunk_samples):
+            logging.info(f"Trunk sample {trunk_idx + 1}/{num_trunk_samples}")
+            cand = run_folding_on_context(
+                feature_context,
+                output_dir=(
+                    output_dir / f"trunk_{trunk_idx}"
+                    if num_trunk_samples > 1
+                    else output_dir
+                ),
+                num_trunk_recycles=num_trunk_recycles,
+                num_diffn_timesteps=num_diffn_timesteps,
+                num_diffn_samples=num_diffn_samples,
+                recycle_msa_subsample=recycle_msa_subsample,
+                seed=seed + trunk_idx if seed is not None else None,
+                device=torch_device,
+                low_memory=low_memory,
+                entity_names_as_chain_names_in_output_cif=fasta_names_as_cif_chains,
+            )
+            all_candidates.append(cand)
     except RuntimeError as e:  
         if "out of memory" in str(e):
             print("| WARNING: ran out of memory, skipping batch")
@@ -569,27 +579,6 @@ def run_inference(
             return
         else:
             print(str(e))
-
-    all_candidates: list[StructureCandidates] = []
-    for trunk_idx in range(num_trunk_samples):
-        logging.info(f"Trunk sample {trunk_idx + 1}/{num_trunk_samples}")
-        cand = run_folding_on_context(
-            feature_context,
-            output_dir=(
-                output_dir / f"trunk_{trunk_idx}"
-                if num_trunk_samples > 1
-                else output_dir
-            ),
-            num_trunk_recycles=num_trunk_recycles,
-            num_diffn_timesteps=num_diffn_timesteps,
-            num_diffn_samples=num_diffn_samples,
-            recycle_msa_subsample=recycle_msa_subsample,
-            seed=seed + trunk_idx if seed is not None else None,
-            device=torch_device,
-            low_memory=low_memory,
-            entity_names_as_chain_names_in_output_cif=fasta_names_as_cif_chains,
-        )
-        all_candidates.append(cand)
     return StructureCandidates.concat(all_candidates)
 
 
